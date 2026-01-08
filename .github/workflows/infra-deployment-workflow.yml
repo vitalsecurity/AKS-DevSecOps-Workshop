@@ -1,6 +1,5 @@
 name: Build and Deploy AKS
 
-# Trigger the workflow on push to main or manual dispatch
 on:
   push:
     branches:
@@ -9,7 +8,6 @@ on:
       - 'tools/deploy/module0/**'
   workflow_dispatch:
 
-# Environment variables from secrets
 env:
   CLUSTER_RESOURCE_GROUP: ${{ secrets.CLUSTER_RESOURCE_GROUP }}
   AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -25,14 +23,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout repository code
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          ref: main         # pin to main branch
-          fetch-depth: 0    # fetch full history if needed
+          ref: main
+          fetch-depth: 0
 
-      # 2. Log into Azure
       - name: Azure login
         uses: azure/login@v1
         with:
@@ -40,7 +36,6 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # 3. Deploy Bicep file
       - name: Deploy AKS via Bicep
         uses: azure/arm-deploy@v1
         with:
@@ -49,7 +44,6 @@ jobs:
           template: tools/deploy/module0/aks.bicep
           failOnStdErr: false
 
-      # 4. Attach Azure Container Registry to AKS
       - name: Attach ACR to AKS
         run: |
           CLUSTER_NAME=$(az aks list \
