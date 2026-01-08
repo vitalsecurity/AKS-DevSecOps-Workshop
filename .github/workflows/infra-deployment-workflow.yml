@@ -1,53 +1,63 @@
+name: Build and Deploy AKS
+
+# Trigger the workflow on push to main or manual dispatch
 on:
   push:
     branches:
       - main
     paths:
       - 'tools/deploy/module0/**'
-  
   workflow_dispatch:
-env:
-  # CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
-  CLUSTER_RESOURCE_GROUP: ${{ secrets.CLUSTER_RESOURCE_GROUP }}
 
-  # name: Azure ARM
+# Environment variables from secrets
+env:
+  CLUSTER_RESOURCE_GROUP: ${{ secrets.CLUSTER_RESOURCE_GROUP }}
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+
 permissions:
-  id-token: write # This is required for requesting the JWT
-  contents: read  # This is required for actions/checkout
+  id-token: write   # Required for OIDC login
+  contents: read    # Required for checkout
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
+      # 1. Checkout repository code
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          ref: main         # pin to main branch
+          fetch-depth: 0    # fetch full history if needed
 
-      # Checkout code
-    - uses: actions/checkout@main
+      # 2. Log into Azure
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # Log into Azure
-    - uses: azure/login@v1
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        # creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # 3. Deploy Bicep file
+      - name: Deploy AKS via Bicep
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          resourceGroupName: ${{ secrets.CLUSTER_RESOURCE_GROUP }}
+          template: tools/deploy/module0/aks.bicep
+          failOnStdErr: false
 
-      # Deploy Bicep file
-    - name: deploy
-      uses: azure/arm-deploy@v1
-      with:
-        subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        resourceGroupName: ${{ secrets.CLUSTER_RESOURCE_GROUP }}
-        template: tools/deploy/module0/aks.bicep 
-        # parameters: tools/deploy/module0/azuredeploy.parameters.json
-        failOnStdErr: false
-
-      # az feature register for Lab 1
-    - name: az feature register
-      run: |
-        az feature register --namespace "Microsoft.ContainerService" --name "EnableWorkloadIdentityPreview"
-
-      # Attach ACR to AKS
-    - name: attach Azure Container Registry to AKS
-      run: |
-        CLUSTER_NAME=$(az aks list --resource-group ${{ secrets.CLUSTER_RESOURCE_GROUP }} --query "[].name" -o tsv)
-        ACR_NAME=$(az acr list --resource-group ${{ secrets.CLUSTER_RESOURCE_GROUP }} --query "[].name" -o tsv)
-        az aks update -n $CLUSTER_NAME -g ${{ secrets.CLUSTER_RESOURCE_GROUP }} --attach-acr $ACR_NAME      
+      # 4. Attach Azure Container Registry to AKS
+      - name: Attach ACR to AKS
+        run: |
+          CLUSTER_NAME=$(az aks list \
+            --resource-group ${{ secrets.CLUSTER_RESOURCE_GROUP }} \
+            --query "[].name" -o tsv)
+          ACR_NAME=$(az acr list \
+            --resource-group ${{ secrets.CLUSTER_RESOURCE_GROUP }} \
+            --query "[].name" -o tsv)
+          az aks update -n $CLUSTER_NAME \
+            -g ${{ secrets.CLUSTER_RESOURCE_GROUP }} \
+            --attach-acr $ACR_NAME
