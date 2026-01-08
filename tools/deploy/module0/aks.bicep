@@ -1,15 +1,17 @@
-// Mandatory params
+// Mandatory Parameters
 param dnsPrefix string = resourceGroup().name
 param clusterName string = 'devsecops-aks'
 param akvName string = 'akv-${uniqueString(resourceGroup().id)}'
 
-// Optional params
+// Optional Parameters
 param location string = resourceGroup().location
+@minValue(1)
+@maxValue(50)
 param agentCount int = 3
 param agentVMSize string = 'Standard_DS2_v2'
 
-// ACR
-resource acr 'Microsoft.ContainerRegistry/registries@2025-04-01' = {
+// Azure Container Registry
+resource acr 'Microsoft.ContainerRegistry/registries@2025-06-01' = {
   name: 'acr${uniqueString(resourceGroup().id)}'
   location: location
   sku: {
@@ -23,13 +25,14 @@ resource acr 'Microsoft.ContainerRegistry/registries@2025-04-01' = {
   }
 }
 
-// AKS
-resource aks 'Microsoft.ContainerService/managedClusters@2025-04-01' = {
+// AKS Cluster
+resource aks 'Microsoft.ContainerService/managedClusters@2025-10-02-preview' = {
   name: clusterName
   location: location
   identity: {
     type: 'SystemAssigned'
   }
+  enableWorkloadIdentity: true
   properties: {
     dnsPrefix: dnsPrefix
     agentPoolProfiles: [
@@ -44,15 +47,12 @@ resource aks 'Microsoft.ContainerService/managedClusters@2025-04-01' = {
     aadProfile: {
       managed: true
       enableAzureRBAC: true
-      workloadIdentity: {
-        enabled: true
-      }
     }
   }
 }
 
 // Key Vault
-resource akv 'Microsoft.KeyVault/vaults@2025-05-01' = {
+resource akv 'Microsoft.KeyVault/vaults@2025-06-01' = {
   name: akvName
   location: location
   properties: {
@@ -74,5 +74,5 @@ resource akv 'Microsoft.KeyVault/vaults@2025-05-01' = {
   }
 }
 
-// Output
+// Outputs
 output controlPlaneFQDN string = aks.properties.fqdn
