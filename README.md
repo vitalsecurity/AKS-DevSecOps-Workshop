@@ -1,33 +1,39 @@
-# Project
+# AKS DevSecOps Workshop
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+Welcome to the **AKS DevSecOps Workshop**, a hands-on learning experience designed to help developers, security engineers, and DevOps professionals understand how to integrate **security into the Azure Kubernetes Service (AKS) lifecycle**. This workshop demonstrates best practices for securing containerized applications, implementing CI/CD pipelines, and applying governance and compliance standards in a cloud-native environment.
 
-As the maintainer of this project, please make a few updates:
+## Workshop Guide
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+The full lab guide is hosted on Notion, providing step-by-step instructions, exercises, and references for each module:
 
-## Contributing
+- **Notion Lab Guide:** [AKS DevSecOps Workshop](https://vitalsecurity.notion.site/aks-devsecops-workshop)
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+## Key Topics Covered
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+- Setting up an Azure Kubernetes Service (AKS) cluster
+- Integrating security scanning into CI/CD pipelines
+- Implementing DevSecOps practices for containerized applications
+- Using Azure Policy and governance tools for compliance
+- Detecting vulnerabilities and remediating risks in AKS deployments
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+## Resources
 
-## Trademarks
+For reference, the original workshop repository from Microsoft is available here:
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
-Any use of third-party trademarks or logos are subject to those third-party's policies.
+- **Original Repo:** [Azure AKS DevSecOps Workshop](https://github.com/Azure/AKS-DevSecOps-Workshop)
+
+## Who Should Use This Workshop
+
+- **Developers** looking to build secure applications on Kubernetes  
+- **DevOps engineers** aiming to integrate security into CI/CD pipelines  
+- **Security professionals** exploring practical cloud-native security controls  
+- **Students or enthusiasts** learning modern DevSecOps practices  
+
+## Getting Started
+
+1. Review the Notion lab guide to understand the workshop structure and prerequisites.  
+2. Clone this repository for access to scripts, templates, and exercise files.  
+3. Follow along with the lab modules to build, secure, and deploy applications in AKS while applying DevSecOps practices.
+
+## Acknowledgements
+H/T to the Contributors of [https://github.com/Azure/AKS-DevSecOps-Workshop](https://github.com/Azure/AKS-DevSecOps-Workshop), including [https://github.com/ahmedbham](https://github.com/ahmedbham) [https://github.com/msmarti](https://github.com/msmarti) and others who developed and open sourced this exercise.
